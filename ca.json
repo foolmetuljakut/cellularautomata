@@ -2,7 +2,7 @@
     "mainapp": {
         "target": {
             "name": "ca-uut",
-            "opts": "-fdiagnostics-color=always -Wall -Werror -g"
+            "opts": "-fdiagnostics-color=always -Wall -Werror -g -Wfatal-errors"
         },
         "files": [
             {
@@ -31,11 +31,15 @@
             },
             {
                 "name": "bmp.hpp",
-                "hash": "b4d3585238298e1ef778651a09d6a5f8"
+                "hash": "1d5c0b15b3e8fe285b3f86fef320274f"
+            },
+            {
+                "name": "trealisation.hpp",
+                "hash": "18c59124ec2375df9567eb9115c25540"
             },
             {
                 "name": "ca.cpp",
-                "hash": "e545390645fe1d9b0869af74158603ff"
+                "hash": "66be7a8932888af69da3eae6c9e298d2"
             }
         ]
     },

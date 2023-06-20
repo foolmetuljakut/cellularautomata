@@ -392,6 +392,21 @@ void terraingenerationtest() {
     
 }
 
+struct tcell {
+    float posx;
+    friend std::ostream& operator<<(std::ostream& out, const tcell& c);
+};
+
+std::ostream& operator<<(std::ostream& out, const tcell& c) { return out << c.posx; }
+
+void inittcell(tcell& c) { c.posx = 0; }
+
+void updatetcell(ca::trealisation<tcell>& r, tcell& c) {
+    static float p = 0.5;
+    if(stats::rfloat() < p)
+        c.posx += 1;
+}
+
 int main(int argc, char **argv) {
     
     // next setup ideas:
@@ -411,7 +426,13 @@ int main(int argc, char **argv) {
 
     */
     
-    // ca::trealisation<> r;
+    ca::trealisation<tcell> r(5, 1, inittcell, updatetcell); 
+    std::cout << r << std::endl;
+
+    for(size_t i{0}; i < 25; i++) {
+        r.update();
+        std::cout << r << std::endl << "-----------------" << std::endl; 
+    }
     return 0; 
 }
 
