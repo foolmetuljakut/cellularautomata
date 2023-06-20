@@ -1,0 +1,11 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pmt",
+            "command": "../pmt/pmt", // Could be any other shell command
+            "args": ["-e", "ca.json"],
+            "type": "shell"
+        }
+    ]
+}

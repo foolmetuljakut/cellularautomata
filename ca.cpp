@@ -309,25 +309,8 @@ void imageprinttest() {
     }
 }
 
-int main(int argc, char **argv) {
-    
-    // next setup ideas:
-    /*
-        ca simulation with data and image output
+void terraingenerationtest() {
 
-        cells: clogging together, persistent motion, slightly randomly drifting
-                maximizing speed by aligning motion locally
-
-        locusts: mostly persistent motion, slightly randomly drifting
-        locusts as above: direction given by neural network based on locally visible food
-                            maximizing speed and food snacked
-
-        mine clearing tanks: neural net dictates left/right gas based on locally visible mines
-                            direction + speed dictated by tank equation
-                            maximizing speed and mines cleared
-
-    */
-    
     int width = 128, height = 128;
     
     std::uniform_int_distribution<int> rndint(-3, 3);
@@ -401,10 +384,32 @@ int main(int argc, char **argv) {
     }
 
     std::stringstream s;
-    s << "ca/landscape.bmp";
+    s << "landscape.bmp";
     bmp.save(s.str());
     std::cout << std::endl;
     
+}
+
+int main(int argc, char **argv) {
+    
+    // next setup ideas:
+    /*
+        ca simulation with data and image output
+
+        cells: clogging together, persistent motion, slightly randomly drifting
+                maximizing speed by aligning motion locally
+
+        locusts: mostly persistent motion, slightly randomly drifting
+        locusts as above: direction given by neural network based on locally visible food
+                            maximizing speed and food snacked
+
+        mine clearing tanks: neural net dictates left/right gas based on locally visible mines
+                            direction + speed dictated by tank equation
+                            maximizing speed and mines cleared
+
+    */
+    
+    updatecelltest1();
     return 0; 
 }
 

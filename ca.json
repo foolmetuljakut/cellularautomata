@@ -1,41 +1,41 @@
 {
     "mainapp": {
         "target": {
-            "name": "ca\/ca",
+            "name": "ca-uut",
             "opts": "-fdiagnostics-color=always -Wall -Werror -g"
         },
         "files": [
             {
-                "name": "ca\/cell.cpp",
+                "name": "cell.cpp",
                 "hash": "ff8c77b7eb1df144dc93ceb355066194"
             },
             {
-                "name": "ca\/cell.hpp",
+                "name": "cell.hpp",
                 "hash": "df2fdfb1621ecfd26c4899c28a866f96"
             },
             {
-                "name": "ca\/stats.cpp",
+                "name": "stats.cpp",
                 "hash": "54c3053e593f26540f84fab746f17f68"
             },
             {
-                "name": "ca\/stats.hpp",
+                "name": "stats.hpp",
                 "hash": "4041c755d4c8e557308bb6b498aceafd"
             },
             {
-                "name": "ca\/realisation.cpp",
+                "name": "realisation.cpp",
                 "hash": "37baafde081286bee9b2978e308d06e5"
             },
             {
-                "name": "ca\/realisation.hpp",
+                "name": "realisation.hpp",
                 "hash": "5ce65bd7296284c88fc7e23e4b350078"
             },
             {
-                "name": "ca\/bmp.hpp",
+                "name": "bmp.hpp",
                 "hash": "b4d3585238298e1ef778651a09d6a5f8"
             },
             {
-                "name": "ca\/ca.cpp",
-                "hash": "30d28183afe57726a4ca94ac1e884783"
+                "name": "ca.cpp",
+                "hash": "e545390645fe1d9b0869af74158603ff"
             }
         ]
     },
