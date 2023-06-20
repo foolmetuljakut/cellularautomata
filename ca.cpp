@@ -7,6 +7,8 @@
 #include "realisation.hpp"
 #include "bmp.hpp"
 
+#include "trealisation.hpp"
+
 #include <vector>
 #include <array>
 #include <random>
@@ -409,7 +411,7 @@ int main(int argc, char **argv) {
 
     */
     
-    updatecelltest1();
+    // ca::trealisation<> r;
     return 0; 
 }
 
