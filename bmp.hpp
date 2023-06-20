@@ -8,6 +8,8 @@
 
 namespace ca {
 
+    /* wrapper class for a code i found on stack overflow
+        https://stackoverflow.com/a/47785639 */
     template<unsigned BYTES_PER_PIXEL = 3>
     class bitmap {
         const int FILE_HEADER_SIZE = 14;
