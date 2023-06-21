@@ -4,7 +4,6 @@
 
 #include "stats.hpp"
 #include "cell.hpp"
-#include "realisation.hpp"
 #include "bmp.hpp"
 
 #include "trealisation.hpp"
@@ -151,14 +150,23 @@ void statsmeanstdtest() {
     std::cout << m << ", " << s << std::endl;
 }
 
+struct rtestcell {
+    size_t updates;
+};
+
 void realisationtest() {
 
-    realisation r;
-    r.create(1000, {"updates"}, {[](cell& c){ c["updates"] += 1; }});
+    ca::trealisation<rtestcell> r(1000, 1, 
+    [](rtestcell& c) {
+        c.updates = 0;
+    },
+    [](ca::trealisation<rtestcell>& s, rtestcell& c){
+        c.updates++;
+    });
     for(unsigned i = 0; i < 10000; i++)
         r.update();
     
-    auto updates = stats::project<float, cell>(r.cells, [](cell& c){ return c["updates"]; });
+    auto updates = stats::project<float, rtestcell>(r.getcells(), [](rtestcell& c){ return c.updates; });
     auto bounds = stats::range<21>(9900, 10100);
 
     auto histogram = stats::bin<20>(updates, bounds);
@@ -169,7 +177,7 @@ void realisationtest() {
     float min = stats::min<20>(histogram), mean = stats::mean<20>(histogram), max = stats::max<20>(histogram);
     std::cout << mean << " (-" << mean-min << "/+" << max-mean << ")" << std::endl;
 }
-
+ 
 struct trader {
     bool buyer; // true: buyer, false: seller
     size_t price, trades, id;
@@ -436,7 +444,7 @@ int main(int argc, char **argv) {
 
     */
     
-    pricesimtest1();
+    realisationtest();
 
     return 0; 
 }
