@@ -170,6 +170,11 @@ void realisationtest() {
     std::cout << mean << " (-" << mean-min << "/+" << max-mean << ")" << std::endl;
 }
 
+struct trader {
+    bool buyer; // true: buyer, false: seller
+    size_t price, trades, id;
+};
+
 void pricesimtest1() {
 
     /*setup: 
@@ -180,92 +185,78 @@ void pricesimtest1() {
                 if sellers can't be found => increase prices by a constant
         measure global price distribution*/
 
-    unsigned A = 50;
-    const unsigned N = 10;
-    for(unsigned a = 1; a < A; a++) 
+    size_t A = 50;
+    const size_t N = 10;
+    for(size_t a = 1; a < A; a++) 
         std::cout << ".";
     std::cout << std::endl;
 
-    for(unsigned a = 1; a < A; a++) {
-        realisation r;
-        // create buyers: { if trades == 0 => increase price }
-        r.create(a, {"price", "trades", "id", "buyer"}, {
-            [](cell& c) {
-                if(c["trades"] < 1)
-                    c["price"] += 1;
-                else
-                    c["price"] -= 1;
+    for(size_t a = 1; a < A; a++) {
+        size_t i = 0;
+        ca::trealisation<trader> r(A, 1, 
+            [&i](trader& t) { t.price = t.id = i++; },
+            [](ca::trealisation<trader>& r, trader& t) {
+                if(t.buyer)
+                    t.price += t.trades == 0 ? 1 : -1;  
+                else // seller
+                    t.price += t.trades == 0 ? -1 : 1;  
             }
-        });
-        // create sellers: { if trades == 0 => decrease price }
-        r.create(A - a, {"price", "trades", "id", "seller"}, {
-            [](cell& c) {
-                if(c["trades"] < 1)
-                    c["price"] -= 1;
-                else
-                    c["price"] += 1;
-            }
-        });
-
-        for(unsigned i = 0; i < r.cells.size(); i++)
-            r.cells[i]["price"] = r.cells[i]["id"] = i;
+        );
 
         std::vector<float> ttrack, id0track, idmaxtrack;
         std::vector<std::array<float, N>> histotrack, bhtrack, shtrack;
         ttrack.push_back(0);
-        id0track.push_back(r.cells[0]["price"]);
-        idmaxtrack.push_back(r.cells.back()["price"]);
+        id0track.push_back(r.getcells().front().price);
+        idmaxtrack.push_back(r.getcells().back().price);
+
         // "manual" update function
-        for(unsigned t = 0; t < 100; t++) {
+        for(size_t t = 0; t < 100; t++) {
 
             // reset everything
-            for(auto& trader : r.cells) 
-                trader["trades"] = 0;
+            for(auto& t : r.getcells()) 
+                t.trades = 0;
 
             // start next round of negotiations
-            for(auto& trader : r.cells) {
-                float pricelvl = trader["price"];
-                bool isbuyer = trader.contains("buyer");
-                auto matches = stats::filter<cell>(r.cells,
-                [pricelvl, isbuyer](cell& partner) {
+            for(auto& t : r.getcells()) {
+                float pricelvl = t.price;
+                bool isbuyer = t.buyer;
+                auto matches = stats::filter<trader>(r.getcells(),
+                [pricelvl, isbuyer](trader& partner) {
                     if(isbuyer)
-                        return partner.contains("seller") && 
-                                pricelvl >= partner["price"];
+                        return (!partner.buyer) && pricelvl >= partner.price;
                     else
-                        return partner.contains("buyer") && 
-                                pricelvl <= partner["price"];
+                        return partner.buyer && pricelvl <= partner.price;
 
                     // return ((partner.contains("seller") && isbuyer) || 
                     //             (partner.contains("buyer") && !isbuyer)) &&
                     //         abs(partner["price"] - pricelvl) < 1;
                 });
 
-                unsigned trades = matches.size();
+                size_t trades = matches.size();
                 if( trades > 0) {
-                    trader["trades"] += trades;
+                    t.trades += trades;
                     for(auto& partner : matches)
-                        partner["trades"] += 1;
+                        partner.trades += 1;
                 }
             }
 
-            for(auto& trader : r.cells) 
-                trader.update();
+            r.update(false);
 
             ttrack.push_back(t+1);
-            id0track.push_back(r.cells[0]["price"]);
-            idmaxtrack.push_back(r.cells.back()["price"]);
+            id0track.push_back(r.getcells().front().price);
+            idmaxtrack.push_back(r.getcells().back().price);
             
-            auto buyers = stats::filter<cell>(r.cells, [](cell& c) { return c.contains("buyer"); });
-            auto sellers = stats::filter<cell>(r.cells, [](cell& c) { return c.contains("seller"); });
-            auto prices = stats::project<float, cell>(r.cells, [](cell& c) { return c["price"]; });
-            auto bprices = stats::project<float, cell>(buyers, [](cell& c) { return c["price"]; });
-            auto sprices = stats::project<float, cell>(sellers, [](cell& c) { return c["price"]; });
+            auto buyers = stats::filter<trader>(r.getcells(), [](trader& c) { return c.buyer; });
+            auto sellers = stats::filter<trader>(r.getcells(), [](trader& c) { return !c.buyer; });
+            auto prices = stats::project<float, trader>(r.getcells(), [](trader& c) { return c.price; });
+            auto bprices = stats::project<float, trader>(buyers, [](trader& c) { return c.price; });
+            auto sprices = stats::project<float, trader>(sellers, [](trader& c) { return c.price; });
 
-            auto binbounds = stats::range<N+1>(0, r.cells.size());
+            auto binbounds = stats::range<N+1>(0, r.getcells().size());
 
             if(a == 1 && t == 0) {
-                auto bounds = std::ofstream((std::stringstream() << "ca/data/bounds.csv").str());
-                for(unsigned i = 0; i < N; i++)
+                auto bounds = std::ofstream((std::stringstream() << "data/bounds.csv").str());
+                for(size_t i = 0; i < N; i++)
                     bounds << binbounds[i] << ", ";
                 bounds << std::endl;
             }
@@ -274,16 +265,16 @@ void pricesimtest1() {
             bhtrack.push_back(stats::bin<N>(bprices, binbounds));
             shtrack.push_back(stats::bin<N>(sprices, binbounds));
         }
-        auto idtrack = std::ofstream((std::stringstream() << "ca/data/idtracka" << a << ".csv").str());
-        for(unsigned n = 0; n < id0track.size(); n++)
+        auto idtrack = std::ofstream((std::stringstream() << "data/idtracka" << a << ".csv").str());
+        for(size_t n = 0; n < id0track.size(); n++)
             idtrack << ttrack[n] << ", "
                     << id0track[n] << ", "
                     << idmaxtrack[n] << "\n";
 
-        auto htrack = std::ofstream((std::stringstream() << "ca/data/htracka" << a << ".csv").str());
-        for(unsigned n = 0; n < histotrack.size(); n++) {
+        auto htrack = std::ofstream((std::stringstream() << "data/htracka" << a << ".csv").str());
+        for(size_t n = 0; n < histotrack.size(); n++) {
             htrack << n << ", ";
-            for(unsigned i = 0; i < N; i++)
+            for(size_t i = 0; i < N; i++)
                 htrack << histotrack[n][i] << ", ";
             htrack << std::endl;
         }
@@ -393,18 +384,30 @@ void terraingenerationtest() {
 }
 
 struct tcell {
-    float posx;
+    float posx, posy;
     friend std::ostream& operator<<(std::ostream& out, const tcell& c);
 };
 
 std::ostream& operator<<(std::ostream& out, const tcell& c) { return out << c.posx; }
 
-void inittcell(tcell& c) { c.posx = 0; }
+void trealisationtest_inittcell(tcell& c) { c.posx = 0; c.posy = 0; }
 
-void updatetcell(ca::trealisation<tcell>& r, tcell& c) {
+void trealisationtest_updatetcell(ca::trealisation<tcell>& r, tcell& c) {
     static float p = 0.5;
     if(stats::rfloat() < p)
         c.posx += 1;
+    else if(stats::rfloat() < p)
+        c.posy += 1;
+}
+
+void trealisationtest() {
+    ca::trealisation<tcell> r(5, 1, trealisationtest_inittcell, trealisationtest_updatetcell); 
+    std::cout << r << std::endl;
+
+    for(size_t i{0}; i < 100; i++) {
+        r.update();
+        std::cout << r << std::endl << "-----------------" << std::endl; 
+    }
 }
 
 int main(int argc, char **argv) {
@@ -426,13 +429,8 @@ int main(int argc, char **argv) {
 
     */
     
-    ca::trealisation<tcell> r(5, 1, inittcell, updatetcell); 
-    std::cout << r << std::endl;
+    pricesimtest1();
 
-    for(size_t i{0}; i < 25; i++) {
-        r.update();
-        std::cout << r << std::endl << "-----------------" << std::endl; 
-    }
     return 0; 
 }
 

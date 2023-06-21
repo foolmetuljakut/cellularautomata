@@ -31,18 +31,26 @@ namespace ca {
             return cells.size() -1;
         }
 
-        void update() {
+        void update(bool stochastic = true) {
             if(processingupdate)
                 return;
 
             processingupdate = true;
-            stats::setab(0, cells.size()-1);
-            for(unsigned i = 0; i < cells.size() * operations; i++) {
-                unsigned ri = stats::rint();
-                cellupdatefn(*this, cells[ri]);
+            if(stochastic) {
+                stats::setab(0, cells.size()-1);
+                for(unsigned i = 0; i < cells.size() * operations; i++) {
+                    unsigned ri = stats::rint();
+                    cellupdatefn(*this, cells[ri]);
+                }
+            } // deterministic
+            else {
+                for(unsigned i = 0; i < cells.size(); i++)
+                    cellupdatefn(*this, cells[i]);
             }
             processingupdate = false;
         }
+
+        std::vector<tcell>& getcells() { return cells; }
 
         template<typename T> friend std::ostream& operator<<(std::ostream& out, const trealisation<T>& r);
     };
