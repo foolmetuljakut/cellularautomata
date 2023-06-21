@@ -194,7 +194,10 @@ void pricesimtest1() {
     for(size_t a = 1; a < A; a++) {
         size_t i = 0;
         ca::trealisation<trader> r(A, 1, 
-            [&i](trader& t) { t.price = t.id = i++; },
+            [&i, &A, &a](trader& t) { 
+                t.price = t.id = i++; 
+                t.buyer = i <= A - a;
+            },
             [](ca::trealisation<trader>& r, trader& t) {
                 if(t.buyer)
                     t.price += t.trades == 0 ? 1 : -1;  
@@ -218,14 +221,12 @@ void pricesimtest1() {
 
             // start next round of negotiations
             for(auto& t : r.getcells()) {
-                float pricelvl = t.price;
-                bool isbuyer = t.buyer;
                 auto matches = stats::filter<trader>(r.getcells(),
-                [pricelvl, isbuyer](trader& partner) {
-                    if(isbuyer)
-                        return (!partner.buyer) && pricelvl >= partner.price;
+                [&t](trader& partner) {
+                    if(t.buyer)
+                        return (!partner.buyer) && t.price >= partner.price;
                     else
-                        return partner.buyer && pricelvl <= partner.price;
+                        return partner.buyer && t.price <= partner.price;
 
                     // return ((partner.contains("seller") && isbuyer) || 
                     //             (partner.contains("buyer") && !isbuyer)) &&
@@ -266,12 +267,18 @@ void pricesimtest1() {
             shtrack.push_back(stats::bin<N>(sprices, binbounds));
         }
         auto idtrack = std::ofstream((std::stringstream() << "data/idtracka" << a << ".csv").str());
+        idtrack << "t, " << "trader[0], " << "trader[-1]";
+        idtrack << std::endl;
         for(size_t n = 0; n < id0track.size(); n++)
             idtrack << ttrack[n] << ", "
                     << id0track[n] << ", "
                     << idmaxtrack[n] << "\n";
 
         auto htrack = std::ofstream((std::stringstream() << "data/htracka" << a << ".csv").str());
+        htrack << "t, ";
+        for(size_t i = 0; i < N; i++)
+            htrack << "d[" << i << "]" << (i < N-1 ? ", " : "");
+        htrack << std::endl;
         for(size_t n = 0; n < histotrack.size(); n++) {
             htrack << n << ", ";
             for(size_t i = 0; i < N; i++)
