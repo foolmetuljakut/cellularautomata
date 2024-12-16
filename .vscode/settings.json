@@ -74,6 +74,12 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "source_location": "cpp",
+        "slist": "cpp",
+        "stdfloat": "cpp",
+        "text_encoding": "cpp"
     }
 }

@@ -1,3 +1,4 @@
-landscape.bmp
-ca-uut
 data/
+build-app/
+build-test/
+coverage-report/

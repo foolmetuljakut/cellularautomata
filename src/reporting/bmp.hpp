@@ -6,7 +6,7 @@
 #include <fstream>
 #include <vector>
 
-namespace ca {
+namespace CellularAutomata::Reporting {
 
     /* wrapper class for a code i found on stack overflow
         https://stackoverflow.com/a/47785639 */
