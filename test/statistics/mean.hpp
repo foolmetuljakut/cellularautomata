@@ -4,7 +4,7 @@
 
 #include "../../src/statistics/mean.hpp"
 
-namespace CellularAutomata::statistics {
+namespace CellularAutomata::Statistics {
 
 TEST(MeanTests, TestSummation) {
     std::array<float, 3> values{-1, 0, 1};

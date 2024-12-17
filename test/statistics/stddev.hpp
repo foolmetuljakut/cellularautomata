@@ -5,9 +5,9 @@
 #include "../../src/statistics/mean.hpp"
 #include "../../src/statistics/stddev.hpp"
 
-namespace CellularAutomata::statistics {
+namespace CellularAutomata::Statistics {
 
-TEST(StdTests, TestStandardDeviation) {
+TEST(StdDevTests, TestStandardDeviation) {
     std::array<float, 3> values{-1, 0, 1};
     float m = mean<3>(values);
     int _7digits = static_cast<int>(stddev<3>(values, m) * 1e7);
