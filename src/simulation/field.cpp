@@ -1,7 +1,7 @@
-#include "cell.hpp"
+#include "field.hpp"
 
 namespace CellularAutomata::Simulation {
     
-    size_t Cell::idCtr = 0;
+    size_t Field::idCtr = 0;
 
 };

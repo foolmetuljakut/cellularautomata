@@ -80,6 +80,7 @@
         "source_location": "cpp",
         "slist": "cpp",
         "stdfloat": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "*.ipp": "cpp"
     }
 }
