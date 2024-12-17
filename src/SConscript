@@ -1,0 +1,31 @@
+import os
+
+Import('env')
+
+# copy parent environment so our alterations don't affect it
+env = env.Clone()
+
+def glob_source_files(dirname="."):
+	globStr=f"{dirname}/*.*pp"
+	globbed = Glob(globStr)
+	print(f"adding from \"{dirname}\": {[file.name for file in globbed]}")
+	return globbed
+
+# add source directories (at all levels) to the include path
+# and add their contents are build targets
+matches = []
+
+env.Append(CPPPATH=['.'])
+matches.append(glob_source_files(dirname="."))
+
+for root, dirnames, filenames in os.walk(os.getcwd()):
+	for dirname in dirnames:
+		env.Append(CPPPATH=[dirname])
+		matches.append(glob_source_files(dirname=dirname))
+
+# debug output
+print('src env CPPPATH:')
+print(env['CPPPATH'])
+
+# build a program # shared library
+env.Program('../bin/cellularautomata', matches)

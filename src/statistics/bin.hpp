@@ -6,7 +6,7 @@
 
 namespace CellularAutomata::Statistics {
 
-    template<unsigned N> static std::array<float, N> bin(std::vector<float>& samples, std::array<float, N+1u>& bounds) {
+    template<unsigned N> std::array<float, N> bin(std::vector<float>& samples, std::array<float, N+1u>& bounds) {
         std::array<float, N> histogram{{}};
 
         for(float& s : samples) {

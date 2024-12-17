@@ -2,3 +2,6 @@ data/
 build-app/
 build-test/
 coverage-report/
+*dblite
+build/
+*.state
