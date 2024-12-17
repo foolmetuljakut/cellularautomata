@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "scenarios.hpp"
 #include "simulation.hpp"
 #include "statistics.hpp"
 

@@ -1,22 +1,10 @@
 #pragma once
 
-#include <array>
+#include <vector>
 
 namespace CellularAutomata::Statistics {
 
-    template<unsigned N> static std::array<float, N> range() {
-        std::array<float, N> r;
-        for(unsigned i = 0; i < N; i++)
-            r[i] = i;
-        return r;
-    }
-
-    template<unsigned N> static std::array<float, N> range(float start, float stop) {
-        std::array<float, N> r;
-        float step = (stop - start) / (N-1);
-        for(unsigned i = 0; i < N; i++)
-            r[i] = start + i * step;
-        return r;
-    }
+    std::vector<size_t> range(unsigned N);
+    std::vector<float> range(unsigned N, float start, float stop);
 
 };
