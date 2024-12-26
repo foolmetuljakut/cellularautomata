@@ -70,6 +70,13 @@ void StochasticRealisation::update() {
     spdlog::info("----------------------");
 }
 
+StochasticRealisation& StochasticRealisation::update(size_t n_cycles) {
+    for(size_t i = 0; i < n_cycles; i++) {
+        update();
+    }
+    return *this;
+}
+
 void StochasticRealisation::moveUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
     bool moveTrigger{stats::unifloat() < params.movementProbability / 3.f};

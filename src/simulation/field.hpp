@@ -18,7 +18,7 @@ namespace CellularAutomata::Simulation {
             cellIndices.reserve(30); // most likely case: around 20-30 cells on a field
         }
 
-        size_t id() { return _id; }
+        size_t id() const { return _id; }
 
         friend std::ostream& operator<<(std::ostream& out, const Field& field);
     };

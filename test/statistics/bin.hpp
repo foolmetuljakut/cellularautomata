@@ -14,8 +14,8 @@ namespace CellularAutomata::Statistics {
                                     3, // equal to upper bound -> outside
                                     3.5f // outside
                                   };
-        std::array<float, 4> bounds {0, 1, 2, 3};
-        std::array<float, 3> histogram = bin<3>(samples, bounds);
+        std::vector<float> bounds {0, 1, 2, 3};
+        std::vector<float> histogram = bin(samples, bounds);
         
         ASSERT_EQ(histogram[0], 0.f);
         ASSERT_EQ(histogram[1], 1.f);

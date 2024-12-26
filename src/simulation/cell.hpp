@@ -19,7 +19,7 @@ namespace CellularAutomata::Simulation {
         Cell(): _id{idCtr++}, pos{invalidIndex}, size{0} {}
         Cell(size_t fieldIndex, float size): _id{idCtr++}, pos{fieldIndex}, size{size} {}
 
-        size_t id() { return _id; }
+        size_t id() const { return _id; }
 
         friend std::ostream& operator<<(std::ostream& out, const Cell& cell);
     };

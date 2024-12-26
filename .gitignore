@@ -4,4 +4,4 @@ build-test/
 coverage-report/
 *dblite
 build/
-*.state
+*_state

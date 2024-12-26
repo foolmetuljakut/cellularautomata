@@ -23,6 +23,7 @@ namespace CellularAutomata::Scenarios {
         virtual void growthUpdate(const size_t& cellIndex);
         virtual void splitUpdate(const size_t& cellIndex);
         void update();
+        StochasticRealisation& update(size_t n_cycles);
     };
 
 };

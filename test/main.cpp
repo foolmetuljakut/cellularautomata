@@ -3,6 +3,7 @@
 #include "scenarios.hpp"
 #include "simulation.hpp"
 #include "statistics.hpp"
+#include "reporting.hpp"
 
 int main(int argc, char** argv) {
     spdlog::set_level(spdlog::level::critical);

@@ -101,7 +101,7 @@ public:
     MOCK_METHOD(void, splitCell, (const size_t& cellIndex, const float& splitRatio), (override));
 };
 
-TEST(UutTests, TestGrowthUpdateAction) {
+TEST(UutTests, TestUpdateAction) {
 
     MockStochasticRealisationUpdateAction r(1, 1, 10.f, 1);
     auto parametrization = SettingsBuilder().standardParametrization();

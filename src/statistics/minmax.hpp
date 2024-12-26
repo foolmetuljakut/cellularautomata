@@ -1,20 +1,10 @@
 #pragma once
 
-#include <array>
+#include <vector>
 
 namespace CellularAutomata::Statistics {
-    template<unsigned N> float min(std::array<float, N>& y) {
-        float m = y[0];
-        for(auto& f : y)
-            if(f < m) m = f;
-        return m;
-    }
-
-    template<unsigned N> float max(std::array<float, N>& y) {
-        float m = y[0];
-        for(auto& f : y)
-            if(f > m) m = f;
-        return m;
-    }
+    
+    float min(std::vector<float>& y);
+    float max(std::vector<float>& y);
 
 };
