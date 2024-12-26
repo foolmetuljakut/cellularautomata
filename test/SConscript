@@ -1,0 +1,45 @@
+import os
+
+Import('env')
+
+# copy parent environment so our alterations don't affect it
+env = env.Clone()
+linkerFlags     = '-lgtest -lgmock'.split()
+env.Append(LINKFLAGS		= linkerFlags)
+
+def glob_source_files(dirname="."):
+	globStr=f"{dirname}/*.*pp"
+	globbed = Glob(globStr)
+	print(f"adding from \"{dirname}\": {[file.name for file in globbed]}")
+	return globbed
+
+# initilize the set of targets to build
+matches = []
+
+env.Append(CPPPATH=["../src"])
+matches.append([file for file in glob_source_files(dirname="../src") if file.name != "main.cpp"])
+# add src dirs to include path
+for root, dirnames, filenames in os.walk('../src'):
+	for dirname in dirnames:
+		dirPath = os.path.join('../src',dirname)
+		print('adding src dir to path: %s' % dirPath)
+		env.Append(CPPPATH=[dirPath])
+		matches.append(glob_source_files(dirname=dirPath))
+
+# add any files in the current directory
+env.Append(CPPPATH=['.'])
+matches.append(glob_source_files(dirname="."))
+
+# add files in subdirectories
+for root, dirnames, filenames in os.walk(os.getcwd()):
+	for dirname in dirnames:
+		print('adding test dir to path: %s' % dirname)
+		env.Append(CPPPATH=[dirname])
+		matches.append(glob_source_files(dirname=dirname))
+
+# debug output
+print('test env CPPPATH:')
+print(env['CPPPATH'])
+
+# build a program that uses the source files as a shared library
+env.Program('../bin/cellularautomata-gtest', matches) # , LIBS=['toolkit'], LIBPATH='../bin/'

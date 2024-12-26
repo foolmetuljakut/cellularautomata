@@ -47,6 +47,8 @@ void IStochasticRealisation::update() {
     }
     std::shuffle(actionIndexSequence.begin(), actionIndexSequence.end(), gen);
 
+    spdlog::info("performing update step");
+    // TODO track down bug: no update calls (growth should be happening always)
     std::uniform_int_distribution uniInt(0, 2);
     for(auto cellIndex : cellIndexSequence) {
         for(size_t actionIndex : actionIndexSequence) {
@@ -65,6 +67,7 @@ void IStochasticRealisation::update() {
             }
         }
     }
+    spdlog::info("----------------------");
 }
 
 StochasticRealisation::StochasticRealisation(size_t width, size_t height, float fieldSize, size_t numberOfCells)
@@ -85,13 +88,16 @@ void StochasticRealisation::moveUpdate(const size_t& cellIndex) {
 
 void StochasticRealisation::growthUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
-    float sizeDiff = cells[cellIndex].size * params.growthPercentage / 3.f;
+    float sizeDiff = params.growthPercentage / 3.f * cells[cellIndex].size *
+                    (1 - cells[cellIndex].size / params.growthMax);
     growCell(cellIndex, sizeDiff);
 }
 
 void StochasticRealisation::splitUpdate(const size_t& cellIndex) {
+    float splitProbability = params.splitProbability * 
+        exp(-pow(cells[cellIndex].size / params.splitMinSize, params.splitCurvature));
     // divide by 3 as all three actions are called in one update
-    bool splitTrigger{stats::unifloat() < params.splitProbability / 3.f};
+    bool splitTrigger{stats::unifloat() < splitProbability / 3.f};
     if(splitTrigger) {
         // TODO implement ratio sampling: gauss(mean, std)
         splitCell(cellIndex, params.splitRatioMean); // insert here instead of 'params.splitRatioMean'

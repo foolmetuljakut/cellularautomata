@@ -42,8 +42,23 @@ SettingsBuilder& SettingsBuilder::growthRate(float growthRate) {
     return *this;
 }
 
+SettingsBuilder& SettingsBuilder::growthMax(float growthMax) {
+    _parametrization.growthMax = growthMax;
+    return *this;
+}
+
 SettingsBuilder& SettingsBuilder::splitRate(float splitRate) {
     _parametrization.splitRate = splitRate;
+    return *this;
+}
+
+SettingsBuilder& SettingsBuilder::splitMinSize(float splitMinSize) {
+    _parametrization.splitMinSize = splitMinSize;
+    return *this;
+}
+
+SettingsBuilder& SettingsBuilder::splitCurvature(float splitCurvature) {
+    _parametrization.splitCurvature = splitCurvature;
     return *this;
 }
 
@@ -64,9 +79,31 @@ SettingsBuilder& SettingsBuilder::initializeWith(std::function<void(sim::Cell& c
 
 StochasticRealisation SettingsBuilder::build() {
     StochasticRealisation r(_width, _height, _fieldSize, _cellCount);
+    // refresh drived quantities based on set parameters
+    _parametrization = sim::Parametrization(_parametrization);
     r.setUnits(_parametrization);
     r.initialize(_cellInitializer);
     return r;
+}
+
+sim::Parametrization SettingsBuilder::standardParametrization() {
+    deltaTime(3600);// 1h in s
+    deltaLength(1e-6f);// 1µm in m
+    
+    movementVelocity(1.3888889e-8f); // 50µm/h in m/s
+
+    growthRate(1.504630e-5f);    // 1.3 / day ≈ 0.00001504629630 s^−1
+    growthMax(9.9e-10f);        // 990 µm²
+
+    splitRate(1.5e-5f);// 1.3 / day ≈ 0.00001504629630 s^−1
+    splitMinSize(80.f); // 80 µm²
+    splitCurvature(3.f); // unitfree
+
+    splitRatioStandardDeviation(0.25f);// 2/3rds of split events occur within +/- 25% of the mothers cell size
+    splitRatioMean(0.5f);// split at 50% of the mothers cell size
+
+    // refresh drived quantities based on set parameters
+    return sim::Parametrization(_parametrization);
 }
 
 SettingsBuilder& SettingsBuilder::standardSetting() {
@@ -75,13 +112,7 @@ SettingsBuilder& SettingsBuilder::standardSetting() {
     fieldSize(10);// size of an individual field in mm²
     initialCellCount(5);
 
-    deltaTime(1);// 1s
-    deltaLength(0.001f);// 1mm
-    movementVelocity(0.001f);// 1mm/s
-    growthRate(1.1574e-11f);// (1 millimeter²) / day ≈ 1.157407407E−11 m²/s
-    splitRate(1.1574e-5f);// 1 / day ≈ 0.00001157407407 s^−1
-    splitRatioStandardDeviation(0.25f);// 2/3rds of split events occur within +/- 25% of the mean
-    splitRatioMean(0.5f);// split at 50% of the mothers cell size
+    _parametrization = standardParametrization();
 
     initializeWith([](sim::Cell& cell) {
         cell.size = 10.f / 5.f;

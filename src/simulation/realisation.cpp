@@ -18,10 +18,11 @@ void Realisation::removeCell(const size_t& cellIndex, const size_t& oldFieldInde
     auto& cellIndices = oldField.cellIndices;
     auto cellIndexIter = std::find(cellIndices.begin(), cellIndices.end(), cellIndex);
     if(cellIndexIter != cellIndices.end()) {
-        spdlog::debug("removing cell {0} from field {1} (space left: {2})", 
-            cell.id(), cell.pos, oldField.remainingSpace);
+        float oldSpace = oldField.remainingSpace;
         oldField.cellIndices.erase(cellIndexIter);
         oldField.remainingSpace += cell.size;
+        spdlog::debug("removing cell {0} from field {1} (space left: {2} -> {3})", 
+            cell.id(), cell.pos, oldSpace, oldField.remainingSpace);
         cell.pos = invalidIndex;
     }
 }
@@ -67,13 +68,19 @@ void Realisation::initialize(std::function<void(Cell& cell)> cellInitializer) {
 
 void Realisation::setUnits(Parametrization params) {
     unitProxySet = true;
-    params = params;
+    this->params = params;
+
+    spdlog::info("per-step parameters:");
+    spdlog::info("p(move) = {0:1.7f}", this->params.movementProbability);
+    spdlog::info("c(grow) = {0:1.7f}", this->params.growthPercentage);
+    spdlog::info("p(split) = {0:1.7f}", this->params.splitProbability);
 }
 
 void Realisation::moveCell(const size_t& cellIndex, const size_t& newFieldIndex) {
     
     bool newIndexInvalid{newFieldIndex == invalidIndex};
     if(newIndexInvalid) {
+        spdlog::debug("rejecting move for cell {} (invalid index)", cellIndex);
         return;
     }
 
@@ -97,6 +104,7 @@ void Realisation::growCell(const size_t& cellIndex, const float& amount) {
     
     bool fieldIndexInvalid {fieldIndex == invalidIndex};
     if(fieldIndexInvalid) {
+        spdlog::debug("rejecting growth for cell {} (invalid index)", cellIndex);
         return;
     }
 

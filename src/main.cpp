@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     StochasticRealisation r = SettingsBuilder().standardSetting().build();
 
     exportState(r, "s_init.state");
-    for (size_t t = 0; t < 25; t++) {
+    for (size_t t = 0; t < 2; t++) {
         r.update();
 
         std::stringstream s;

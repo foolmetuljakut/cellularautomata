@@ -17,6 +17,7 @@ namespace CellularAutomata::Scenarios {
 
     public:
         StochasticRealisation build(); // returns a readily configured stochastic realisation
+        sim::Parametrization standardParametrization();
         SettingsBuilder& standardSetting(); // the builder with standard values
 
         SettingsBuilder& width(size_t width);
@@ -27,7 +28,10 @@ namespace CellularAutomata::Scenarios {
         SettingsBuilder& deltaLength(float deltaLength);
         SettingsBuilder& movementVelocity(float movementVelocity);
         SettingsBuilder& growthRate(float growthRate);
+        SettingsBuilder& growthMax(float growthMax);
         SettingsBuilder& splitRate(float splitRate);
+        SettingsBuilder& splitMinSize(float splitMinSize);
+        SettingsBuilder& splitCurvature(float splitCurvature);
         SettingsBuilder& splitRatioStandardDeviation(float splitRatioStandardDeviation);
         SettingsBuilder& splitRatioMean(float splitRatioMean);
         SettingsBuilder& initializeWith(std::function<void(sim::Cell& cell)> cellInitializer);

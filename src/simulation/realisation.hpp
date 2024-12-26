@@ -30,6 +30,7 @@ namespace CellularAutomata::Simulation {
 
         void initialize(std::function<void(Cell& cell)> cellInitializer);
         void setUnits(Parametrization params);
+        Parametrization getUnits() { return params; }
         size_t getWidth() const { return width; }
         size_t getHeight() const { return height; }
         size_t getFieldSize() const { return fieldSize; }

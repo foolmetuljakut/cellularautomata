@@ -66,20 +66,44 @@ public:
 
 TEST(UutTests, TestUpdateCalling) {
     MockStochasticRealisationUpdates r(1, 1, 0.f, 1);
-    r.setUnits(CellularAutomata::Simulation::Parametrization(
-            1.f, // 1s
-            0.001f, // 1mm
-            0.001f, // 1mm/s
-            1.1574e-11f, // (1 millimeter²) / day ≈ 1.157407407E−11 m²/s
-            1.1574e-5f, // 1 / day ≈ 0.00001157407407 s^−1
-            0.25f, // 2/3rds of split events occur within +/- 0.25 of the mean
-            0.5f // split 50/50
-        )
-    );
+    r.setUnits(SettingsBuilder().standardParametrization());
     EXPECT_CALL(r, moveUpdate(0)).Times(1);
     EXPECT_CALL(r, splitUpdate(0)).Times(1);
     EXPECT_CALL(r, growthUpdate(0)).Times(1);
     r.update();
+}
+
+TEST(UutTests, TestProbabilities) {
+    StochasticRealisation r = SettingsBuilder().standardSetting().build();
+    Parametrization p = r.getUnits();
+    
+    ASSERT_FLOAT_EQ(p.deltaTime, 3600.f);
+    ASSERT_FLOAT_EQ(p.deltaLength, 1e-6f);
+
+    ASSERT_FLOAT_EQ(p.movementVelocity, 1.3888889e-8f);
+    ASSERT_FLOAT_EQ(p.movementProbability, 50); // µm / h
+
+    ASSERT_FLOAT_EQ(p.growthRate, 1.504630e-5f);
+    ASSERT_FLOAT_EQ(p.growthPercentage, 0.054166682); // 1.3/d in 1/h
+
+    ASSERT_FLOAT_EQ(p.splitRate, 1.5e-5f);
+    ASSERT_FLOAT_EQ(p.splitProbability, 0.053999998f); // 1.3/d in 1/h
+
+}
+
+TEST(UutTests, TestGrowthUpdateAction) {
+
+    StochasticRealisation r(1, 1, 10.f, 1);
+    r.setUnits(SettingsBuilder().standardParametrization());
+    auto cellInitializer = [](Cell& cell){ 
+        cell.pos = 0;
+        cell.size = 1.f;
+    };
+    r.initialize(cellInitializer);
+
+    r.update(); // growth by < 5%
+    ASSERT_GT(r.cells[0].size, 1.f);
+    ASSERT_LT(r.cells[0].size, 1.05f);
 }
 
 };

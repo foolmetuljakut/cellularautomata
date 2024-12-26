@@ -102,20 +102,20 @@ namespace CellularAutomata::Simulation {
         ASSERT_EQ(r.cells[1].size, 5.f);
     }
 
-    TEST(RealisationTests, ParametrizationSetTest) {
+    TEST(RealisationTests, ParametrizationImplicitParametersTest) {
+        float time = 2, length = 3;
         Parametrization p(
-            1.f, // 1s
-            0.001f, // 1mm
-            0.001f, // 1mm/s
-            static_cast<float>(1.1574e-11), // (1 millimeter²) / day ≈ 1.157407407E−11 m²/s
-            static_cast<float>(1.1574e-5), // 1 / day ≈ 0.00001157407407 s^−1
-            0.25f, // 2/3rds of split events occur within +/- 0.25 of the mean
-            0.5f // split 50/50
+            time, length, // time , length
+            4, // v(move) 
+            5, 6, // r(growth), A(growth)
+            7, 8, 9, 10, 11 // r(split), A(split), m(split), s(split), M(split)
         );
 
-        ASSERT_FLOAT_EQ(p.movementProbability, 1.f);
-        ASSERT_FLOAT_EQ(p.growthPercentage, 1.1574e-5f);
-        ASSERT_FLOAT_EQ(p.splitProbability, 1.1574e-5f);
+        ASSERT_FLOAT_EQ(p.movementProbability, 4.f * time / length);
+
+        ASSERT_FLOAT_EQ(p.growthPercentage, 5.f * time);
+
+        ASSERT_FLOAT_EQ(p.splitProbability, 7.f * time);
     }
 
 };
