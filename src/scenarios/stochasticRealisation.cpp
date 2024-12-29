@@ -2,14 +2,14 @@
 
 namespace CellularAutomata::Scenarios {
 
-IStochasticRealisation::IStochasticRealisation(size_t width, size_t height, float fieldSize, size_t numberOfCells)
+StochasticRealisation::StochasticRealisation(size_t width, size_t height, float fieldSize, size_t numberOfCells)
     : Realisation(width, height, fieldSize, numberOfCells), 
     xDiff{-1, -1, -1,  0, 0,  1, 1, 1},
     yDiff{-1,  0,  1, -1, 1, -1, 0, 1} {
 
     }
 
-size_t IStochasticRealisation::neighbouringField(size_t fieldIndex, float r) {
+size_t StochasticRealisation::neighbouringField(size_t fieldIndex, float r) {
     auto& field = fields[fieldIndex];
     float x = field.x, y = field.y;
 
@@ -32,7 +32,7 @@ size_t IStochasticRealisation::neighbouringField(size_t fieldIndex, float r) {
     return sim::invalidIndex;
 }
 
-void IStochasticRealisation::update() {
+void StochasticRealisation::update() {
     if(!unitProxySet) {
         throw "unit system has to be defined. set unit proxy.";
     }
@@ -63,16 +63,11 @@ void IStochasticRealisation::update() {
                     splitUpdate(cellIndex);
                     break;
                 default:
-                throw "IStochasticRealisation::update(): only three actions (0, 1, 2) supported.";
+                throw "StochasticRealisation::update(): only three actions (0, 1, 2) supported.";
             }
         }
     }
     spdlog::info("----------------------");
-}
-
-StochasticRealisation::StochasticRealisation(size_t width, size_t height, float fieldSize, size_t numberOfCells)
-    : IStochasticRealisation(width, height, fieldSize, numberOfCells) {
-
 }
 
 void StochasticRealisation::moveUpdate(const size_t& cellIndex) {

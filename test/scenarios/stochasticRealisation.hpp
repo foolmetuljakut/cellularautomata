@@ -55,10 +55,10 @@ TEST(UutTests, TestInvalidNeighborhoodSteps) {
     ASSERT_EQ(invalids, 5);
 }
 
-class MockStochasticRealisationUpdates: public IStochasticRealisation {
+class MockStochasticRealisationUpdates: public StochasticRealisation {
 public:
     MockStochasticRealisationUpdates(size_t width, size_t height, float fieldSize, size_t numberOfCells)
-        : IStochasticRealisation(width, height, fieldSize, numberOfCells) {}
+        : StochasticRealisation(width, height, fieldSize, numberOfCells) {}
     MOCK_METHOD(void, moveUpdate, (const size_t& cellIndex), (override));
     MOCK_METHOD(void, growthUpdate, (const size_t& cellIndex), (override));
     MOCK_METHOD(void, splitUpdate, (const size_t& cellIndex), (override));
@@ -91,19 +91,41 @@ TEST(UutTests, TestProbabilities) {
 
 }
 
+class MockStochasticRealisationUpdateAction: public StochasticRealisation {
+public:
+    MockStochasticRealisationUpdateAction(size_t width, size_t height, float fieldSize, size_t numberOfCells)
+        : StochasticRealisation(width, height, fieldSize, numberOfCells) {}
+    /*Implementations of updates mocked above will call these actions*/
+    MOCK_METHOD(void, moveCell, (const size_t& cellIndex, const size_t& newFieldIndex), (override));
+    MOCK_METHOD(void, growCell, (const size_t& cellIndex, const float& amount), (override));
+    MOCK_METHOD(void, splitCell, (const size_t& cellIndex, const float& splitRatio), (override));
+};
+
 TEST(UutTests, TestGrowthUpdateAction) {
 
-    StochasticRealisation r(1, 1, 10.f, 1);
-    r.setUnits(SettingsBuilder().standardParametrization());
+    MockStochasticRealisationUpdateAction r(1, 1, 10.f, 1);
+    auto parametrization = SettingsBuilder().standardParametrization();
+    parametrization.splitRate = 1.f; /*some bullshit value, that ensures a call (probability of 1)*/
+    parametrization.movementVelocity = 1.f; /*some bullshit value, that ensures a call (probability of 1)*/
+    r.setUnits(parametrization);
     auto cellInitializer = [](Cell& cell){ 
         cell.pos = 0;
         cell.size = 1.f;
     };
     r.initialize(cellInitializer);
 
-    r.update(); // growth by < 5%
-    ASSERT_GT(r.cells[0].size, 1.f);
-    ASSERT_LT(r.cells[0].size, 1.05f);
+    size_t cellIndex = 0;
+
+    float sizeDifference = 0.0180555601f;
+    EXPECT_CALL(r, growCell(cellIndex, sizeDifference)).Times(1);
+
+    size_t neighbouringIndex = invalidIndex;
+    EXPECT_CALL(r, moveCell(cellIndex, neighbouringIndex)).Times(1);
+
+    float splitRatio = 0.5f;
+    EXPECT_CALL(r, splitCell(cellIndex, splitRatio)).Times(1);
+
+    r.update();
 }
 
 };

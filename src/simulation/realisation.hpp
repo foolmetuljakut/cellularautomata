@@ -13,9 +13,9 @@ namespace CellularAutomata::Simulation {
 
     class Realisation {
     protected:
-        void placeCell(const size_t& cellIndex, const size_t& newFieldIndex);
-        void removeCell(const size_t& cellIndex, const size_t& oldFieldIndex);
-        bool isConsistent(const Cell& cell);
+        virtual void placeCell(const size_t& cellIndex, const size_t& newFieldIndex);
+        virtual void removeCell(const size_t& cellIndex, const size_t& oldFieldIndex);
+        virtual bool isConsistent(const Cell& cell);
 
         size_t width, height;
         float fieldSize;
@@ -35,9 +35,9 @@ namespace CellularAutomata::Simulation {
         size_t getHeight() const { return height; }
         size_t getFieldSize() const { return fieldSize; }
     
-        void moveCell(const size_t& cellIndex, const size_t& newFieldIndex);
-        void growCell(const size_t& cellIndex, const float& amount);
-        void splitCell(const size_t& cellIndex, const float& splitRatio);
+        virtual void moveCell(const size_t& cellIndex, const size_t& newFieldIndex);
+        virtual void growCell(const size_t& cellIndex, const float& amount);
+        virtual void splitCell(const size_t& cellIndex, const float& splitRatio);
     };
 
 };
