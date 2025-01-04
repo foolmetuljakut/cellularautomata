@@ -5,3 +5,4 @@ coverage-report/
 *dblite
 build/
 *_state
+time_series/

@@ -82,7 +82,7 @@ void StochasticRealisation::moveUpdate(const size_t& cellIndex) {
     bool moveTrigger{stats::unifloat() < params.movementProbability / 3.f};
     if(moveTrigger) {
         size_t newFieldIndex = neighbouringField(cells[cellIndex].pos, stats::unifloat());
-        spdlog::debug("move update for cell {0}: {1} -> {2}", 
+        spdlog::info("move update for cell {0}: {1} -> {2}", 
             cellIndex, cells[cellIndex].pos, newFieldIndex);
         moveCell(cellIndex, newFieldIndex);
     }
@@ -92,6 +92,7 @@ void StochasticRealisation::growthUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
     float sizeDiff = params.growthPercentage / 3.f * cells[cellIndex].size *
                     (1 - cells[cellIndex].size / params.growthMax);
+    spdlog::info("grow update cell {}", cellIndex);
     growCell(cellIndex, sizeDiff);
 }
 
@@ -101,6 +102,7 @@ void StochasticRealisation::splitUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
     bool splitTrigger{stats::unifloat() < splitProbability / 3.f};
     if(splitTrigger) {
+        spdlog::info("split cell {}", cellIndex);
         // TODO implement ratio sampling: gauss(mean, std)
         splitCell(cellIndex, params.splitRatioMean); // insert here instead of 'params.splitRatioMean'
     }

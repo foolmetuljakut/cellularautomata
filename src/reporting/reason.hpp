@@ -10,10 +10,12 @@ namespace scen = CellularAutomata::Scenarios;
 #include "timeSeries.hpp"
 #include "distribution.hpp"
 
+#include <sciplot/sciplot.hpp>
+
 namespace CellularAutomata::Reporting {
 
     class Reason {
-        std::filesystem::path workspace, rawDataSpace;
+        std::filesystem::path workspace, rawDataSpace, procDataSpace;
         
         std::map<std::string, IndividualCellExtractor> cellMaps;
         std::map<std::string, IndividualPostProcessor> cellPostProcessingMaps;
@@ -25,6 +27,7 @@ namespace CellularAutomata::Reporting {
 
         std::map<std::string, CollectionCellExtractor> cellEnsembleMaps;
         std::map<std::string, CollectionPostProcessor> cellEnsemblePostProcessingMaps;
+        std::map<std::string, TimeSeriesUncertaintyPlot> cellEnsemblePlots;
 
         std::map<std::string, CollectionFieldExtractor> fieldEnsembleMaps;
         std::map<std::string, CollectionPostProcessor> fieldEnsemblePostProcessingMaps;
@@ -37,16 +40,16 @@ namespace CellularAutomata::Reporting {
         std::vector<MetaInformation> claim;
 
         void createWorkspace(std::string name);
-        void createRawSpace();
         void streamClaim();
         void streamRawData(const scen::StochasticRealisation& r);
         void streamIndividualCellData(const scen::StochasticRealisation& r);
         void streamIndividualFieldData(const scen::StochasticRealisation& r);
         void streamEnsembleCellData(const scen::StochasticRealisation& r);
+        void plotEnsembleCellData();
         void streamEnsembleCellStatData(const scen::StochasticRealisation& r);
         void streamEnsembleFieldData(const scen::StochasticRealisation& r);
         void streamProcessedData(const scen::StochasticRealisation& r);
-
+        void plotProcessedData();
     public:
 
         Reason(std::string workspace);
@@ -61,6 +64,8 @@ namespace CellularAutomata::Reporting {
         // void addCellEnsemblePostProcessing(std::string name, CollectionPostProcessor e);
         // void addFieldEnsemblePostProcessing(std::string name, CollectionPostProcessor e);
 
+        void addCellEnsemblePlot(std::string name, TimeSeriesUncertaintyPlot plotDescription);
+
         /*
         datenfluss:
             extraktoren -> post prozessoren -> plot accessoren 
@@ -71,6 +76,7 @@ namespace CellularAutomata::Reporting {
 
         std::string getWorkspaceDir();
         std::string getRawDataSpace();
+        std::string getProcDataSpace();
 
         Reason& operator<<(const scen::StochasticRealisation& r);
     };

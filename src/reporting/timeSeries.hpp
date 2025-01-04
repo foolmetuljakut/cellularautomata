@@ -26,9 +26,18 @@ namespace CellularAutomata::Reporting {
     */
 
     class TimeSeriesUncertaintyPlot {
-        std::string filename;
     public:
-        TimeSeriesUncertaintyPlot(std::string filename);
+        std::string curveLabel, uncertaintyLabel;
+        float xScale, yScale;
+        std::string xlabel, ylabel, title;
+        bool xlog, ylog;
+
+        TimeSeriesUncertaintyPlot() {}
+        TimeSeriesUncertaintyPlot(
+        std::string curveLabel, std::string uncertaintyLabel,
+        float xScale, float yScale,
+        std::string xlabel, std::string ylabel, std::string title,
+        bool xlog, bool ylog);
     };
 
 };

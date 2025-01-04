@@ -37,18 +37,11 @@ TEST_F(TestReasoning, TestWorkspaceCreation) {
     ASSERT_TRUE(std::filesystem::exists(std::filesystem::directory_entry(workspaceDirName)));
 };
 
-TEST_F(TestReasoning, RawSpaceCreation) {
-    rep::Reason reason(workspaceDirName);
-    scen::StochasticRealisation realisation = scen::SettingsBuilder().standardSetting().build();
-    reason << realisation;
-    
-    bool foundRawFolder = false;
-    for(const auto& dir : std::filesystem::directory_iterator(workspaceDirName)) {
-        if(dir.path().string().find("raw_") != std::string::npos) {
-            foundRawFolder = true;
-        }
-    }
-    ASSERT_TRUE(foundRawFolder);
+TEST_F(TestReasoning, workspaceCreation) {
+    rep::Reason reason(workspaceDirName);    
+    ASSERT_TRUE(std::filesystem::exists(reason.getWorkspaceDir()));
+    ASSERT_TRUE(std::filesystem::exists(reason.getRawDataSpace()));
+    ASSERT_TRUE(std::filesystem::exists(reason.getProcDataSpace()));
 }
 
 TEST_F(TestReasoning, TestDataLogging) {
@@ -59,7 +52,7 @@ TEST_F(TestReasoning, TestDataLogging) {
     scen::StochasticRealisation realisation = scen::SettingsBuilder().standardSetting().build();
     reason << realisation;
 
-    std::filesystem::path wsPath(workspaceDirName);
+    std::filesystem::path wsPath(reason.getProcDataSpace());
     std::filesystem::path cellMapDir(wsPath / "cellMaps");
 
     ASSERT_TRUE(std::filesystem::exists(cellMapDir / "position_indices.csv"));
