@@ -32,6 +32,56 @@ size_t StochasticRealisation::neighbouringField(size_t fieldIndex, float r) {
     return sim::invalidIndex;
 }
 
+bool StochasticRealisation::cellCanMove(const size_t& cellIndex) {
+
+    // check if cell can move anywhere and stop asap if we know the answer
+    size_t fieldIndex = cells[cellIndex].pos;
+    if(fieldIndex == sim::invalidIndex) {
+        return false;
+    }
+
+    auto& field = fields[fieldIndex];
+    float x = field.x, y = field.y;
+
+    for(size_t i = 0; i < xDiff.size(); i++) {
+        float xd = x + xDiff[i], yd = y + yDiff[i];
+        if(xd >= 0 && yd >= 0 && xd < width && yd < height) {
+            size_t newFieldIndex = xd * height + yd;
+            bool cellToFat{fields[newFieldIndex].remainingSpace < cells[cellIndex].size};
+            if(!cellToFat) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool StochasticRealisation::cellCanGrow(const size_t& cellIndex) {
+    size_t fieldIndex = cells[cellIndex].pos;
+    if(fieldIndex == sim::invalidIndex || fieldIndex >= fields.size()) {
+        return false;
+    }
+    return fields[fieldIndex].remainingSpace > 0;
+}
+
+bool StochasticRealisation::cellCanSplit(const size_t& cellIndex) {
+    return calcSplitProbability(cellIndex) > 0.05;
+}
+
+bool StochasticRealisation::determineActivity(const size_t& cellIndex) {
+    if(cellCanMove(cellIndex)) {
+        return true;
+    }
+    if(cellCanGrow(cellIndex)) {
+        return true;
+    }
+    if(cellCanSplit(cellIndex)) {
+        return true;
+    }
+    return false;
+}
+
 void StochasticRealisation::update() {
     if(!unitProxySet) {
         throw "unit system has to be defined. set unit proxy.";
@@ -48,9 +98,22 @@ void StochasticRealisation::update() {
     std::shuffle(actionIndexSequence.begin(), actionIndexSequence.end(), gen);
 
     spdlog::info("performing update step for {} cells with {} updates each", cellIndexSequence.size(), actionIndexSequence.size());
+    size_t cellUpdateCounter = 0;
     // TODO track down bug: no update calls (growth should be happening always)
     std::uniform_int_distribution uniInt(0, 2);
     for(auto cellIndex : cellIndexSequence) {
+        // is the cell already marked as inactive?
+        if(!cells[cellIndex].active) {
+            continue;
+        }
+
+        // can the cell be marked as inactive?
+        if(!determineActivity(cellIndex)) {
+            spdlog::debug("setting cell {} inactive", cellIndex);
+            cells[cellIndex].active = false;
+            continue;
+        }
+
         for(size_t actionIndex : actionIndexSequence) {
             switch(actionIndex) {
                 case 0:
@@ -66,7 +129,11 @@ void StochasticRealisation::update() {
                 throw "StochasticRealisation::update(): only three actions (0, 1, 2) supported.";
             }
         }
+        cellUpdateCounter++;
     }
+    spdlog::info("physics updates for {} ({}%) cells calculated", cellUpdateCounter, 
+        100.f * static_cast<float>(cellUpdateCounter) / static_cast<float>(cells.size())
+    );
 }
 
 StochasticRealisation& StochasticRealisation::update(size_t n_cycles) {
@@ -94,10 +161,15 @@ void StochasticRealisation::growthUpdate(const size_t& cellIndex) {
     growCell(cellIndex, sizeDiff);
 }
 
-void StochasticRealisation::splitUpdate(const size_t& cellIndex) {
+float StochasticRealisation::calcSplitProbability(const size_t& cellIndex) {
+    // divide by 3 as all three actions are called in one update
     float splitProbability = params.splitProbability / 3.f * 
         exp(-pow(cells[cellIndex].size / params.splitMinSize, params.splitCurvature));
-    // divide by 3 as all three actions are called in one update
+    return splitProbability;
+}
+
+void StochasticRealisation::splitUpdate(const size_t& cellIndex) {
+    float splitProbability = calcSplitProbability(cellIndex);
     bool splitTrigger{stats::unifloat() < splitProbability};
     spdlog::debug("split probability: {}", splitProbability);
     if(splitTrigger) {

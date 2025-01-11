@@ -77,7 +77,7 @@ void exportTimeSeries(const StochasticRealisation& r, Reason& timeSeries) {
 
 int main(int argc, char** argv) {
 
-    spdlog::set_level(spdlog::level::info); // Set global log level to debug
+    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
     Application app("2D cell simulation", 200, 150, 100.f, 15);
     app.run();
 

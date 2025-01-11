@@ -15,7 +15,7 @@ namespace CellularAutomata::Simulation {
     protected:
         virtual void placeCell(const size_t& cellIndex, const size_t& newFieldIndex);
         virtual void removeCell(const size_t& cellIndex, const size_t& oldFieldIndex);
-        virtual bool isConsistent(const Cell& cell);
+        virtual bool checkConsistency(const Cell& cell);
 
         size_t width, height;
         float fieldSize;

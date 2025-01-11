@@ -15,9 +15,10 @@ namespace CellularAutomata::Simulation {
     public:
         size_t pos;
         float size;
+        bool active;
 
-        Cell(): _id{idCtr++}, pos{invalidIndex}, size{0} {}
-        Cell(size_t fieldIndex, float size): _id{idCtr++}, pos{fieldIndex}, size{size} {}
+        Cell(): _id{idCtr++}, pos{invalidIndex}, size{0}, active{true} {}
+        Cell(size_t fieldIndex, float size): _id{idCtr++}, pos{fieldIndex}, size{size}, active{true} {}
 
         size_t id() const { return _id; }
 

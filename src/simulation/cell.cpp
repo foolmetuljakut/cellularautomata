@@ -6,6 +6,6 @@ namespace CellularAutomata::Simulation {
 
     std::ostream& operator<<(std::ostream& out, const Cell& cell) {
         return out << "{" << cell._id << "size=" << cell.size
-                    << " @ fIndex=" << cell.pos << "}";
+                    << " @ fIndex=" << cell.pos << ", (active=" << cell.active << ")}";
     }
 };

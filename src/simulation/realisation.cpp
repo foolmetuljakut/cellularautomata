@@ -27,15 +27,21 @@ void Realisation::removeCell(const size_t& cellIndex, const size_t& oldFieldInde
     }
 }
 
-bool Realisation::isConsistent(const Cell& cell) {
+bool Realisation::checkConsistency(const Cell& cell) {
     if(cell.pos > fields.size()) {
         throw "cell position inconsistent! (index > #fields)";
     }
     if(cell.pos == invalidIndex) {
         throw "cell position inconsistent! (invalid index)";
     }
+    if(cell.pos > fields.size()) {
+        throw "cell position inconsistent! (out of bounds)";
+    }
     if(cell.size < 0) {
         throw "cell size inconsistent! (negative size)";
+    }
+    if(!cell.active) {
+        throw "cell is not active and won't be set active later (needs to be true)";
     }
     return true;
 }
@@ -59,10 +65,8 @@ Realisation::Realisation(size_t width, size_t height, float fieldSize, size_t nu
 void Realisation::initialize(std::function<void(Cell& cell)> cellInitializer) {
     for(size_t i = 0; i < cells.size(); i++) {
         cellInitializer(cells[i]);
+        checkConsistency(cells[i]);
         placeCell(i, cells[i].pos);
-        if(!isConsistent(cells[i])) {
-            throw "consistency check for cells failed!";
-        }
     }
 }
 
