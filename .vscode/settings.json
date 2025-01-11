@@ -81,6 +81,7 @@
         "slist": "cpp",
         "stdfloat": "cpp",
         "text_encoding": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "regex": "cpp"
     }
 }

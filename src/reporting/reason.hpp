@@ -42,13 +42,26 @@ namespace CellularAutomata::Reporting {
         void createWorkspace(std::string name);
         void streamClaim();
         void streamRawData(const scen::StochasticRealisation& r);
-        void streamIndividualCellData(const scen::StochasticRealisation& r);
-        void streamIndividualFieldData(const scen::StochasticRealisation& r);
-        void streamEnsembleCellData(const scen::StochasticRealisation& r);
+
+        void processIndividualCellData(const scen::StochasticRealisation& r);
+        void streamIndividualCellData();
+
+        void processIndividualFieldData(const scen::StochasticRealisation& r);
+        void streamIndividualFieldData();
+
+        void processEnsembleCellData(const scen::StochasticRealisation& r);
+        void streamEnsembleCellData();
         void plotEnsembleCellData();
-        void streamEnsembleCellStatData(const scen::StochasticRealisation& r);
-        void streamEnsembleFieldData(const scen::StochasticRealisation& r);
-        void streamProcessedData(const scen::StochasticRealisation& r);
+
+        void processEnsembleCellStatData(const scen::StochasticRealisation& r);
+        void streamEnsembleCellStatData();
+
+        void processEnsembleFieldData(const scen::StochasticRealisation& r);
+        void streamEnsembleFieldData();
+
+        void processData(const scen::StochasticRealisation& r);
+        void streamProcessedData();
+
         void plotProcessedData();
     public:
 
@@ -78,7 +91,13 @@ namespace CellularAutomata::Reporting {
         std::string getRawDataSpace();
         std::string getProcDataSpace();
 
-        Reason& operator<<(const scen::StochasticRealisation& r);
-    };
+        void process(const scen::StochasticRealisation& r);
+        void save(const scen::StochasticRealisation& r);
 
+        void clear();
+        std::vector<float> getCellMapData(std::string name) const;
+        std::vector<float> getFieldMapData(std::string name) const;
+        std::vector<float> getCellEnsembleData(std::string name) const;
+        std::vector<float> getFieldEnsembleData(std::string name) const;
+    };
 };

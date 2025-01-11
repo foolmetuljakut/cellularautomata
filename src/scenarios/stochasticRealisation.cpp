@@ -47,7 +47,7 @@ void StochasticRealisation::update() {
     }
     std::shuffle(actionIndexSequence.begin(), actionIndexSequence.end(), gen);
 
-    spdlog::info("performing update step");
+    spdlog::info("performing update step for {} cells with {} updates each", cellIndexSequence.size(), actionIndexSequence.size());
     // TODO track down bug: no update calls (growth should be happening always)
     std::uniform_int_distribution uniInt(0, 2);
     for(auto cellIndex : cellIndexSequence) {
@@ -67,7 +67,6 @@ void StochasticRealisation::update() {
             }
         }
     }
-    spdlog::info("----------------------");
 }
 
 StochasticRealisation& StochasticRealisation::update(size_t n_cycles) {
@@ -79,11 +78,11 @@ StochasticRealisation& StochasticRealisation::update(size_t n_cycles) {
 
 void StochasticRealisation::moveUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
-    bool moveTrigger{stats::unifloat() < params.movementProbability / 3.f};
+    float p = params.movementProbability / 3.f;
+    bool moveTrigger{stats::unifloat() < p};
+    spdlog::debug("movement prob: {}", p);
     if(moveTrigger) {
         size_t newFieldIndex = neighbouringField(cells[cellIndex].pos, stats::unifloat());
-        spdlog::info("move update for cell {0}: {1} -> {2}", 
-            cellIndex, cells[cellIndex].pos, newFieldIndex);
         moveCell(cellIndex, newFieldIndex);
     }
 }
@@ -92,17 +91,16 @@ void StochasticRealisation::growthUpdate(const size_t& cellIndex) {
     // divide by 3 as all three actions are called in one update
     float sizeDiff = params.growthPercentage / 3.f * cells[cellIndex].size *
                     (1 - cells[cellIndex].size / params.growthMax);
-    spdlog::info("grow update cell {}", cellIndex);
     growCell(cellIndex, sizeDiff);
 }
 
 void StochasticRealisation::splitUpdate(const size_t& cellIndex) {
-    float splitProbability = params.splitProbability * 
+    float splitProbability = params.splitProbability / 3.f * 
         exp(-pow(cells[cellIndex].size / params.splitMinSize, params.splitCurvature));
     // divide by 3 as all three actions are called in one update
-    bool splitTrigger{stats::unifloat() < splitProbability / 3.f};
+    bool splitTrigger{stats::unifloat() < splitProbability};
+    spdlog::debug("split probability: {}", splitProbability);
     if(splitTrigger) {
-        spdlog::info("split cell {}", cellIndex);
         // TODO implement ratio sampling: gauss(mean, std)
         splitCell(cellIndex, params.splitRatioMean); // insert here instead of 'params.splitRatioMean'
     }

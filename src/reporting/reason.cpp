@@ -41,11 +41,8 @@ namespace CellularAutomata::Reporting {
         }
     }
 
-    void Reason::streamIndividualCellData(const scen::StochasticRealisation& r) {
+    void Reason::processIndividualCellData(const scen::StochasticRealisation& r) {
         for(auto& [name, mapping] : cellMaps) {
-
-            auto mapDir = procDataSpace / "cellMaps";
-            createWorkspace(mapDir);
 
             spdlog::debug("recording {}", name);
             std::vector<float> data;
@@ -62,6 +59,14 @@ namespace CellularAutomata::Reporting {
             } else {
                 cellMapData.insert({name, data});
             }
+        }
+    }
+
+    void Reason::streamIndividualCellData() {
+        for(auto& [name, mapping] : cellMaps) {
+
+            auto mapDir = procDataSpace / "cellMaps";
+            createWorkspace(mapDir);
 
             std::ofstream out(mapDir / (name + ".csv"));
             out << name << std::endl;
@@ -72,11 +77,8 @@ namespace CellularAutomata::Reporting {
         }
     }
 
-    void Reason::streamIndividualFieldData(const scen::StochasticRealisation& r) {
+    void Reason::processIndividualFieldData(const scen::StochasticRealisation& r) {
         for(auto& [name, mapping] : fieldMaps) {
-
-            auto mapDir = procDataSpace / "fieldMaps";
-            createWorkspace(mapDir);
 
             spdlog::debug("recording {}", name);
             std::vector<float> data;
@@ -93,6 +95,14 @@ namespace CellularAutomata::Reporting {
             } else {
                 fieldMapData.insert({name, data});
             }
+        }
+    }
+
+    void Reason::streamIndividualFieldData() {
+
+        for(auto& [name, mapping] : fieldMaps) {
+            auto mapDir = procDataSpace / "fieldMaps";
+            createWorkspace(mapDir);
 
             std::ofstream out(mapDir / (name + ".csv"));
             out << name << std::endl;
@@ -103,7 +113,7 @@ namespace CellularAutomata::Reporting {
         }
     }
     
-    void Reason::streamEnsembleCellData(const scen::StochasticRealisation& r) {
+    void Reason::processEnsembleCellData(const scen::StochasticRealisation& r) {
         for(auto& [name, mapping] : cellEnsembleMaps) {
 
             auto mapDir = procDataSpace / "cellEnsembleMaps";
@@ -119,6 +129,14 @@ namespace CellularAutomata::Reporting {
             } else {
                 cellEnsembleData.insert({name, data});
             }
+        }
+    }
+
+    void Reason::streamEnsembleCellData() {
+        for(auto& [name, mapping] : cellEnsembleMaps) {
+
+            auto mapDir = procDataSpace / "cellEnsembleMaps";
+            createWorkspace(mapDir);
 
             std::ofstream out(mapDir / (name + ".csv"));
             out << name << std::endl;
@@ -179,11 +197,8 @@ namespace CellularAutomata::Reporting {
         }
     }
     
-    void Reason::streamEnsembleCellStatData(const scen::StochasticRealisation& r) {
+    void Reason::processEnsembleCellStatData(const scen::StochasticRealisation& r) {
         for(auto& [name, mapping]: cellStatMaps) {
-
-            auto mapDir = procDataSpace / "cellEnsembleMaps";
-            createWorkspace(mapDir);
 
             spdlog::debug("recording {}", name);
             float data = mapping(r.cells);
@@ -193,6 +208,14 @@ namespace CellularAutomata::Reporting {
             } else {
                 cellEnsembleData.insert({name, std::vector<float>{data}});
             }
+        }
+    }
+
+    void Reason::streamEnsembleCellStatData() {
+
+        for(auto& [name, mapping]: cellStatMaps) {
+            auto mapDir = procDataSpace / "cellEnsembleMaps";
+            createWorkspace(mapDir);
 
             std::ofstream out(mapDir / (name + ".csv"));
             out << name << std::endl;
@@ -204,7 +227,7 @@ namespace CellularAutomata::Reporting {
         }
     }
 
-    void Reason::streamEnsembleFieldData(const scen::StochasticRealisation& r) {
+    void Reason::processEnsembleFieldData(const scen::StochasticRealisation& r) {
         for(auto& [name, mapping] : fieldEnsembleMaps) {
 
             auto mapDir = procDataSpace / "fieldEnsembleMaps";
@@ -220,7 +243,14 @@ namespace CellularAutomata::Reporting {
             } else {
                 fieldEnsembleData.insert({name, data});
             }
+        }
+    }
 
+    void Reason::streamEnsembleFieldData() {
+        for(auto& [name, mapping] : fieldEnsembleMaps) {
+
+            auto mapDir = procDataSpace / "fieldEnsembleMaps";
+            createWorkspace(mapDir);
             std::ofstream out(mapDir / (name + ".csv"));
             out << name << std::endl;
             for(const auto& value: fieldEnsembleData[name]) {
@@ -230,12 +260,20 @@ namespace CellularAutomata::Reporting {
         }
     }
 
-    void Reason::streamProcessedData(const scen::StochasticRealisation& r) {
-        streamIndividualCellData(r);
-        streamIndividualFieldData(r);
-        streamEnsembleCellData(r);
-        streamEnsembleCellStatData(r);
-        streamEnsembleFieldData(r);
+    void Reason::processData(const scen::StochasticRealisation& r) {
+        processIndividualCellData(r);
+        processIndividualFieldData(r);
+        processEnsembleCellData(r);
+        processEnsembleCellStatData(r);
+        processEnsembleFieldData(r);
+    }
+
+    void Reason::streamProcessedData() {
+        streamIndividualCellData();
+        streamIndividualFieldData();
+        streamEnsembleCellData();
+        streamEnsembleCellStatData();
+        streamEnsembleFieldData();
     }
 
     void Reason::plotProcessedData() {
@@ -321,18 +359,40 @@ namespace CellularAutomata::Reporting {
         return procDataSpace.string();
     }
 
-    Reason& Reason::operator<<(const scen::StochasticRealisation& r) {
-        /*pipe realisation through all extractors and create timePlots & distroPlots 
-        pipe all raw data, tracking information & plots into workspace*/
+    void Reason::process(const scen::StochasticRealisation& r) {
         spdlog::info("recording reason");
+        processData(r);
+    }
 
+    void Reason::save(const scen::StochasticRealisation& r) {
+        spdlog::info("saving reason to {}", workspace.string());
         streamClaim();
-
         streamRawData(r);
-        streamProcessedData(r);
+        streamProcessedData();
         plotProcessedData();
+    }
 
-        return *this;
+    void Reason::clear() {
+        cellMapData.clear(); 
+        fieldMapData.clear(); 
+        cellEnsembleData.clear(); 
+        fieldEnsembleData.clear(); 
+    }
+
+    std::vector<float> Reason::getCellMapData(std::string name) const {
+        return cellMapData.at(name);
+    }
+
+    std::vector<float> Reason::getFieldMapData(std::string name) const {
+        return fieldMapData.at(name);
+    }
+    
+    std::vector<float> Reason::getCellEnsembleData(std::string name) const {
+        return cellEnsembleData.at(name);
+    }
+
+    std::vector<float> Reason::getFieldEnsembleData(std::string name) const {
+        return fieldEnsembleData.at(name);
     }
 
 };

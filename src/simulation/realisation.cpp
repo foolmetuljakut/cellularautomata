@@ -90,6 +90,9 @@ void Realisation::moveCell(const size_t& cellIndex, const size_t& newFieldIndex)
         return;
     }
 
+    spdlog::debug("move cell {0} from {1} to {2}", 
+        cellIndex, cells[cellIndex].pos, newFieldIndex);
+
     bool posIsInvalid{cell.pos == invalidIndex};
     if(!posIsInvalid) {
         removeCell(cellIndex, cell.pos);

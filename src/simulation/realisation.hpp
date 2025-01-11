@@ -33,7 +33,7 @@ namespace CellularAutomata::Simulation {
         Parametrization getUnits() { return params; }
         size_t getWidth() const { return width; }
         size_t getHeight() const { return height; }
-        size_t getFieldSize() const { return fieldSize; }
+        float getFieldSize() const { return fieldSize; }
     
         virtual void moveCell(const size_t& cellIndex, const size_t& newFieldIndex);
         virtual void growCell(const size_t& cellIndex, const float& amount);

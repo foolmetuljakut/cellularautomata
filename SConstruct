@@ -8,9 +8,9 @@ libraries 		= []
 library_paths 	= ''
 cppDefines 		= {}
 debugFlags 		= ['-g']
-cppFlags 		= '-fdiagnostics-color=always -Wall -Wformat -Werror -Wfatal-errors'.split(' ')
+cppFlags 		= '-O3 -fdiagnostics-color=always -Wall -Wformat -Werror -Wfatal-errors'.split(' ')
 cxxFlags 		= []
-linkerFlags     = ['-lspdlog']
+linkerFlags     = '-lspdlog -lconfig++ -lsfml-graphics -lsfml-window -lsfml-system'.split(' ')
 
 AddOption('--build', dest='build', type='string', nargs=1, action='store', help="activate build configurations")
 AddOption('--tests-only', dest='tests_only', nargs=0, help="build test binary only")
