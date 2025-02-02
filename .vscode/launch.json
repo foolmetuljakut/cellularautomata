@@ -23,8 +23,8 @@
                 "text": "-gdb-set disassembly-flavor intel",
                 "ignoreFailures": true
             }
-        ],
-        "preLaunchTask": "build"
+        ]//,
+        // "preLaunchTask": "build"
       },
       {
         "name": "(gdb) ca app",
@@ -48,8 +48,8 @@
                 "text": "-gdb-set disassembly-flavor intel",
                 "ignoreFailures": true
             }
-        ],
-        "preLaunchTask": "build"
+        ]//,
+        // "preLaunchTask": "build"
       }
     ]
   }

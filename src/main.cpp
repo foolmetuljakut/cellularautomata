@@ -7,6 +7,8 @@ using namespace CellularAutomata::Simulation;
 using namespace CellularAutomata::Scenarios;
 #include "reporting.hpp"
 using namespace CellularAutomata::Reporting;
+#include "gui.hpp"
+using namespace CellularAutomata::Gui;
 
 void exportState(const StochasticRealisation& r, Reason& timeSeries, std::string dirName) {
     Reason currentState(dirName);
@@ -44,8 +46,10 @@ void exportState(const StochasticRealisation& r, Reason& timeSeries, std::string
         return binning;
     });
 
-    timeSeries << r;
-    currentState << r;
+    timeSeries.process(r);
+    timeSeries.save(r);
+    currentState.process(r);
+    currentState.save(r);
 }
 
 Reason timeSeriesRecording() {
@@ -67,21 +71,15 @@ Reason timeSeriesRecording() {
 }
 
 void exportTimeSeries(const StochasticRealisation& r, Reason& timeSeries) {
-    timeSeries << r;
+    timeSeries.process(r);
+    timeSeries.save(r);
 }
 
 int main(int argc, char** argv) {
 
-    spdlog::set_level(spdlog::level::debug); // Set global log level to debug
-
-    StochasticRealisation r = SettingsBuilder().standardSetting().build();
-    Reason timeSeries = timeSeriesRecording();
-
-    exportTimeSeries(r, timeSeries);
-    for (size_t t = 0; t < 5 * 24 + 1; t++) {
-        r.update();
-        exportTimeSeries(r, timeSeries);
-    }
+    spdlog::set_level(spdlog::level::info); // Set global log level to debug
+    Application app("2D cell simulation", 200, 150, 100.f, 15);
+    app.run();
 
     return 0;
 }

@@ -65,8 +65,15 @@ public:
 };
 
 TEST(UutTests, TestUpdateCalling) {
-    MockStochasticRealisationUpdates r(1, 1, 0.f, 1);
+    MockStochasticRealisationUpdates r(1, 2, 15.f, 1);
     r.setUnits(SettingsBuilder().standardParametrization());
+    r.initialize(
+        [](Cell& cell) {
+            cell.size = 1.f;
+            cell.pos = 0;
+        }
+    );
+
     EXPECT_CALL(r, moveUpdate(0)).Times(1);
     EXPECT_CALL(r, splitUpdate(0)).Times(1);
     EXPECT_CALL(r, growthUpdate(0)).Times(1);
@@ -126,6 +133,54 @@ TEST(UutTests, TestUpdateAction) {
     EXPECT_CALL(r, splitCell(cellIndex, splitRatio)).Times(1);
 
     r.update();
+}
+
+TEST(UutTests, TestActivityMovement) {
+    StochasticRealisation r = SettingsBuilder()
+        .standardSetting()
+        .width(1)
+        .height(1)
+        .initialCellCount(1)
+        .initializeWith(
+            [](Cell& cell) {
+                cell.pos = 0;
+            }
+        )
+        .build();
+
+    size_t cellIndex = 0;
+    ASSERT_FALSE(r.cellCanMove(cellIndex));
+}
+
+TEST(UutTests, TestActivityGrowth) {
+    StochasticRealisation r = SettingsBuilder()
+        .standardSetting()
+        .width(1)
+        .height(1)
+        .initialCellCount(1)
+        .fieldSize(10.f)
+        .initializeWith([](Cell& cell) {
+            cell.size = 10.f;
+            cell.pos = 0;
+        }).build();
+
+    size_t cellIndex = 0;
+    ASSERT_FALSE(r.cellCanGrow(cellIndex));
+}
+
+TEST(UutTests, TestActivitySplit) {
+    StochasticRealisation r = SettingsBuilder()
+        .standardSetting()
+        .width(1)
+        .height(1)
+        .initialCellCount(1)
+        .initializeWith([](Cell& cell){
+            cell.size = 1.f;
+            cell.pos = 0;
+        }).build();
+    
+    size_t cellIndex = 0;
+    ASSERT_FALSE(r.cellCanSplit(cellIndex));
 }
 
 };

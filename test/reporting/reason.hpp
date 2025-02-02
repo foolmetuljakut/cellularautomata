@@ -50,7 +50,8 @@ TEST_F(TestReasoning, TestDataLogging) {
     reason.addCellMap("position_indices", [](const sim::Cell& cell) { return (float)cell.pos; });
 
     scen::StochasticRealisation realisation = scen::SettingsBuilder().standardSetting().build();
-    reason << realisation;
+    reason.process(realisation);
+    reason.save(realisation);
 
     std::filesystem::path wsPath(reason.getProcDataSpace());
     std::filesystem::path cellMapDir(wsPath / "cellMaps");

@@ -15,7 +15,7 @@ namespace CellularAutomata::Simulation {
     protected:
         virtual void placeCell(const size_t& cellIndex, const size_t& newFieldIndex);
         virtual void removeCell(const size_t& cellIndex, const size_t& oldFieldIndex);
-        virtual bool isConsistent(const Cell& cell);
+        virtual bool checkConsistency(const Cell& cell);
 
         size_t width, height;
         float fieldSize;
@@ -33,7 +33,7 @@ namespace CellularAutomata::Simulation {
         Parametrization getUnits() { return params; }
         size_t getWidth() const { return width; }
         size_t getHeight() const { return height; }
-        size_t getFieldSize() const { return fieldSize; }
+        float getFieldSize() const { return fieldSize; }
     
         virtual void moveCell(const size_t& cellIndex, const size_t& newFieldIndex);
         virtual void growCell(const size_t& cellIndex, const float& amount);
