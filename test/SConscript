@@ -17,14 +17,12 @@ def glob_source_files(dirname="."):
 matches = []
 
 env.Append(CPPPATH=["../src"])
-matches.append([file for file in glob_source_files(dirname="../src") if file.name != "main.cpp"])
 # add src dirs to include path
 for root, dirnames, filenames in os.walk('../src'):
 	for dirname in dirnames:
-		dirPath = os.path.join('../src',dirname)
-		print('adding src dir to path: %s' % dirPath)
+		dirPath = os.path.join('../src', dirname)
 		env.Append(CPPPATH=[dirPath])
-		matches.append(glob_source_files(dirname=dirPath))
+		matches.append([file for file in glob_source_files(dirname=dirPath) if file.name != "main.cpp"])
 
 # add any files in the current directory
 env.Append(CPPPATH=['.'])
@@ -33,7 +31,6 @@ matches.append(glob_source_files(dirname="."))
 # add files in subdirectories
 for root, dirnames, filenames in os.walk(os.getcwd()):
 	for dirname in dirnames:
-		print('adding test dir to path: %s' % dirname)
 		env.Append(CPPPATH=[dirname])
 		matches.append(glob_source_files(dirname=dirname))
 
