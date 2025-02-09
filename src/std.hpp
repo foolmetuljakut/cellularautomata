@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <memory>
 #include <array>
 #include <fstream>
 #include <functional>

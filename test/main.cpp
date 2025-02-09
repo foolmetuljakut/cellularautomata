@@ -4,6 +4,7 @@
 #include "simulation.hpp"
 #include "statistics.hpp"
 #include "reporting.hpp"
+#include "market_sim.hpp"
 
 int main(int argc, char** argv) {
     spdlog::set_level(spdlog::level::critical);
