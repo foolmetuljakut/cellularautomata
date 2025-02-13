@@ -17,6 +17,9 @@ namespace CellularAutomata::MarketSim {
         void transact(Order& buy, Order& sell, size_t amount, float agreedPrice);
         TransactionType decidePriceMakingParty(Order& buy, Order& sell);
     public:
+        size_t getActorUnits(size_t actorId) { return actors[actorId].units; }
+        float getActorMoney(size_t actorId) { return actors[actorId].money; }
+
         size_t addActor(float initialMoney, size_t initialUnits); 
         size_t addOrder(Order&& order, TransactionType type, size_t actorId);
         size_t openPurchaseOrders() { return openPurchases.size(); }

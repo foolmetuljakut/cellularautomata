@@ -25,9 +25,10 @@ namespace CellularAutomata::MarketSim {
     }
 
     void Market::transact(Order& buy, Order& sell, size_t amount, float agreedPrice) {
-        float totalSum = amount * agreedPrice;
-        Account buyer = actors[buy.actorId], seller = actors[sell.actorId];
+        Account& buyer = actors[buy.actorId];
+        Account& seller = actors[sell.actorId];
         
+        float totalSum = amount * agreedPrice;
         buyer.money -= totalSum; // buyer pays money
         buyer.units += amount; // buyer gets units in return
         seller.money += totalSum; // seller gets money

@@ -19,4 +19,9 @@ TEST(MarketSim, TransactionTestBuy) {
 
     ASSERT_EQ(market.openPurchaseOrders(), 0);
     ASSERT_EQ(market.openSalesOrders(), 0);
+
+    ASSERT_EQ(market.getActorUnits(sellerId), 0);
+    ASSERT_EQ(market.getActorUnits(buyerId), 1);
+    ASSERT_EQ(market.getActorMoney(sellerId), 1.f);
+    ASSERT_EQ(market.getActorMoney(buyerId), 0.f);
 }
