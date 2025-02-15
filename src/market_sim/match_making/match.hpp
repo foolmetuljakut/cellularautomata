@@ -7,6 +7,6 @@
 
 namespace CellularAutomata::MarketSim::MatchMaking {
 
-    typedef std::map<size_t, std::vector<size_t>> Match;
+    typedef std::map<size_t, std::vector<size_t>> Matches;
 
 };

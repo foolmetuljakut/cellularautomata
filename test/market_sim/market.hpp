@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "../../src/market_sim/market.hpp"
+#include "../../src/market_sim.hpp"
 using namespace CellularAutomata::MarketSim;
 
 TEST(MarketSim, TransactionTestBuy) {

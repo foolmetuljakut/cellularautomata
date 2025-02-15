@@ -22,7 +22,7 @@ namespace CellularAutomata::MarketSim::MatchMaking {
         std::vector<size_t> range(size_t size);
         
     public:
-        std::tuple<Match, Match> findMatches(
+        std::tuple<Matches, Matches> findMatches(
             std::vector<Order> openPurchases, 
             std::vector<Order> openSales
         );

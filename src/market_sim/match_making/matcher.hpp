@@ -12,7 +12,7 @@ namespace CellularAutomata::MarketSim::MatchMaking {
     class Matcher {
     public:
         
-        virtual std::tuple<Match, Match> findMatches(
+        virtual std::tuple<Matches, Matches> findMatches(
             std::vector<Order> openPurchases, 
             std::vector<Order> openSales
         ) = 0;

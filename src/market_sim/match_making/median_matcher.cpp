@@ -7,12 +7,14 @@ std::vector<size_t> MedianMatcher::findMatchesForPurchase(
     const Order& openPurchase, 
     std::vector<Order>& openSales) {
 
+    return std::vector<size_t>();
 }
 
 std::vector<size_t> MedianMatcher::findMatchesForSale(
     std::vector<Order>& openPurchases, 
     const Order& openSale) {
 
+    return std::vector<size_t>();
 }
 
 std::vector<size_t> MedianMatcher::range(size_t size) {
@@ -23,12 +25,12 @@ std::vector<size_t> MedianMatcher::range(size_t size) {
     return indices;
 }
 
-std::tuple<Match, Match> MedianMatcher::findMatches(
+std::tuple<Matches, Matches> MedianMatcher::findMatches(
     std::vector<Order> openPurchases, 
     std::vector<Order> openSales) {
     // intentionally takes copies of data to shrink lists iteratively
 
-    Match purchaseMatches, saleMatches;
+    Matches purchaseMatches, saleMatches;
     
     // TODO replace sorting of inputs with sorting of index arrays
     // then perform operations via index arrays
@@ -78,6 +80,8 @@ std::tuple<Match, Match> MedianMatcher::findMatches(
             saleScore--;
         }
     }
+
+    return std::make_tuple(purchaseMatches, saleMatches);
 }
 
 };
