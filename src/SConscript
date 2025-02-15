@@ -5,27 +5,35 @@ Import('env')
 # copy parent environment so our alterations don't affect it
 env = env.Clone()
 
-def glob_source_files(dirname="."):
-	globStr=f"{dirname}/*.*pp"
-	globbed = Glob(globStr)
-	print(f"adding from \"{dirname}\": {[file.name for file in globbed]}")
-	return globbed
+source_dir = os.path.join("..", "src")
 
-# add source directories (at all levels) to the include path
-# and add their contents are build targets
-matches = []
+def glob_source_files(dir_name="."):
+	globStr=f"{dir_name}/*.*pp"
+	file_list = [file.__str__() for file in Glob(globStr)]
+	file_list_relative_paths = ["../" + path[(len(env.fs.pathTop)+1):] for path in file_list]
+	return file_list_relative_paths
 
-env.Append(CPPPATH=['.'])
-matches.append(glob_source_files(dirname="."))
+def all_sources_from_dir(start_dir, exclude_main_cpp = False):
+	matches = []
 
-for root, dirnames, filenames in os.walk(os.getcwd()):
-	for dirname in dirnames:
-		env.Append(CPPPATH=[dirname])
-		matches.append(glob_source_files(dirname=dirname))
+	def add_files_filtered(dir):
+		globbed_files = [file for file in glob_source_files(dir) if not file in matches]
 
-# debug output
-print('src env CPPPATH:')
-print(env['CPPPATH'])
+		for file in globbed_files:
+			if (exclude_main_cpp and not "main.cpp" in file) or not exclude_main_cpp:
+				matches.append(file)
+
+	for root, dirnames, _ in os.walk(start_dir):
+		add_files_filtered(root)
+		for dirname in dirnames:
+			dirPath = os.path.join(root, dirname)
+			env.Append(CPPPATH=[dirPath])
+			add_files_filtered(dirPath)
+
+	return matches
+
+# initilize the set of targets to build
+matches = all_sources_from_dir(source_dir)
 
 # build a program # shared library
-env.Program('../bin/cellularautomata', matches)
+env.Program('../bin/cellularautomata', [File(file) for file in matches])
