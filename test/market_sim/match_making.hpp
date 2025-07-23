@@ -17,6 +17,20 @@ TEST(MatchMakingTests, SimpleMedianMatcherTest) {
     MedianMatcher matcher;
     auto [purchaseMatches, saleMatches] = matcher.findMatches(openPurchases, openSales);
 
-    std::cout << "purchase matches: " << purchaseMatches[0].size() << std::endl;
-    std::cout << "sale matches: " << purchaseMatches[0][0] << ", " << purchaseMatches[1][0] << std::endl;
+    std::cout << "purchase matches: " << std::endl;
+    for(auto& [p_key, p_list] : purchaseMatches) {
+        std::cout << p_key << " -> ";
+        for(auto& m : p_list) {
+            std::cout << m << ",";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "sale matches: " << std::endl;
+    for(auto& [s_key, s_list] : saleMatches) {
+        std::cout << s_key << " -> ";
+        for(auto& m : s_list) {
+            std::cout << m << ",";
+        }
+        std::cout << std::endl;
+    }
 }

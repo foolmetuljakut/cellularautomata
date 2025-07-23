@@ -81,7 +81,7 @@ std::tuple<Matches, Matches> MedianMatcher::findMatches(
         }
     }
 
-    return std::make_tuple(purchaseMatches, saleMatches);
+    return {purchaseMatches, saleMatches};
 }
 
 };
